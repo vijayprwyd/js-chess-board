@@ -55,46 +55,64 @@ function createChessBoard() {
         }
     }
     
-    function stopTrackPieceMove() {
+    async function stopTrackPieceMove() {
         document.removeEventListener('mousemove', trackPieceMove);
-
-        // Reset position if invalid move
-        let squareWidth = chessboard.offsetWidth/8;
-        let halfSquareWidth = squareWidth/2;
 
         if(activePiece) {
 
-            let newLeft = (Math.ceil((x -halfSquareWidth)/squareWidth)*squareWidth);
-            let newTop = (Math.ceil((y -halfSquareWidth)/squareWidth)*squareWidth);
+            // Absolute x, y cordinates
+            let normalizedX = normalizeCordinates(x, chessboard.offsetWidth);
+            let normalizedY = normalizeCordinates(y, chessboard.offsetWidth);
 
-            let newX = newLeft * 100 / (chessboard.offsetWidth * PERCENTAGE_SQUARE_WIDTH)
-            let newY = newTop * 100 / (chessboard.offsetWidth * PERCENTAGE_SQUARE_WIDTH)
+            let cX = absoluteToCartesianConverter(normalizedX, chessboard.offsetWidth);
+            let cY = absoluteToCartesianConverter(normalizedY, chessboard.offsetWidth);
 
-            console.log(`${newX} ${newY}`)
-            activePiece.style.left = (newLeft * 100 / chessboard.offsetWidth) + '%';
-            activePiece.style.top = (newTop * 100 / chessboard.offsetWidth) + '%';
+            activePiece.style.left = absoluteToPercentageConverter(normalizedX, chessboard.offsetWidth);
+            activePiece.style.top = absoluteToPercentageConverter(normalizedY, chessboard.offsetWidth);
 
+            let currentPos = activePiece.initialPos;
+            try {
+
+                activePiece.initialPos = [cX, cY];
+                activePiece.style.left = (normalizedX * 100 / chessboard.offsetWidth) + '%';
+                activePiece.style.top = (normalizedY * 100 / chessboard.offsetWidth) + '%';
+                let isValid = await updatePosition(currentPos[0] + currentPos[1] * 8, cX + cY * 8);
+
+                if(!isValid) {
+
+                    activePiece.initialPos = currentPos;
+                    activePiece.style.cssText = ` left: ${cartesianToPercentageConverter(currentPos[0])}; top: ${cartesianToPercentageConverter(currentPos[1])}`;
+     
+                }
+
+            } catch(e) {
+
+               activePiece.initialPos = currentPos;
+               activePiece.style.cssText = ` left: ${cartesianToPercentageConverter(currentPos[0])}; top: ${cartesianToPercentageConverter(currentPos[1])}`;
+
+            }
         }
         activePiece = null;
     }
 
-    function createSquare(initX = 0, initY = 0) {
+    function createSquare(initX = 0, initY = 0, className = 'wp', pieceType = { color: 'white', piece: 'PON'}) {
+
+        chessPiecesCurrentPosition[initX + initY * 8] = pieceType;
 
         let square = document.createElement('div');
-        square.setAttribute('class', 'square');
-        square.style.cssText = ` left: ${initX * PERCENTAGE_SQUARE_WIDTH}%; top: ${initY * PERCENTAGE_SQUARE_WIDTH}%`;
+        square.setAttribute('class', className);
+        square.style.cssText = ` left: ${cartesianToPercentageConverter(initX)}; top: ${cartesianToPercentageConverter(initY)}`;
+
         chessboard.appendChild(square);
-    
+        square.initialPos = [initX, initY];
+        square.pieceType = pieceType;
         square.addEventListener('mousedown', function (e) {
-    
             offset = [
                 square.offsetLeft - e.clientX,
                 square.offsetTop - e.clientY
             ];
     
             activePiece = square;
-            activePiece.initialPos = [square.offsetLeft, square.offsetTop];
-    
             document.addEventListener('mousemove', trackPieceMove);
             document.addEventListener('mouseup',stopTrackPieceMove, true);
 
