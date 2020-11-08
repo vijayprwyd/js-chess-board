@@ -1,36 +1,29 @@
-let count = 0, resizeCount = 0;
 function createChessBoard() {
-
     let chessboard = document.createElement('div');
     chessboard.setAttribute('class', 'chessboard');
 
-    function resizeChessBoard(entries) {
-
-        for (const entry of entries) {
-
-            let squareSize = Math.min(entry.contentRect.width, entry.contentRect.height);
-            let normalizedSize = Math.floor(squareSize/TOTAL_SQUARES) * TOTAL_SQUARES;
-            chessboard.style.width = `${normalizedSize}px`
-            chessboard.style.height = `${normalizedSize}px`
-        }
-    }
-
-    let debouncedResizeObserver = debounce(resizeChessBoard);
-    const resizeObserver = new ResizeObserver(function (entries) {
-        debouncedResizeObserver(entries);
-    });
-
-    resizeObserver.observe(document.body);
-
     // To track the piece that is currently moved
-    let activePiece;
-    let offset;
-    let x, y;
+    let activePiece, offset, x, y, mouseMoved;
 
-    document.getElementById('root').appendChild(chessboard);
-
-    createSquare();
-    createSquare(2, 3);
+    // function which observes the chessboard resize events and accordingly modifies the size of the pieces
+    function resizeChessboardObserver() {
+        let debouncedResizeObserver = debounce(resizeChessBoard);
+        const resizeObserver = new ResizeObserver(function (entries) {
+            debouncedResizeObserver(entries);
+        });
+        resizeObserver.observe(document.body);
+    
+        function resizeChessBoard(entries) {
+    
+            for (const entry of entries) {
+    
+                let squareSize = Math.min(entry.contentRect.width, entry.contentRect.height);
+                let normalizedSize = Math.floor(squareSize/TOTAL_SQUARES) * TOTAL_SQUARES;
+                chessboard.style.width = `${normalizedSize}px`
+                chessboard.style.height = `${normalizedSize}px`
+            }
+        }    
+    }
 
     function getPos(X, Y) {
 
@@ -45,19 +38,28 @@ function createChessBoard() {
         return [x/chessboard.offsetWidth, y/chessboard.offsetWidth];
     }
     
+    // Tracks mouse move and positions the pieces within the board according to the position of mouse
     function trackPieceMove(event) {
-
+        event.preventDefault();
+        mouseMoved = true;
         if(activePiece) {
 
-            let [x, y] = getPos(event.clientX + offset[0], event.clientY + offset[1]);
+            let [x, y] = getPos(event.clientX + offset[0], event.clientY + offset[1], chessboard, activePiece);
             activePiece.style.left = x*100 +  '%';
             activePiece.style.top = y*100 +  '%';
         }
     }
     
-    async function stopTrackPieceMove() {
-        document.removeEventListener('mousemove', trackPieceMove);
+    // Invoked after a piece is positioned on a point during a players turn
+    async function stopTrackPieceMove(event) {
+        event.preventDefault();
 
+        document.removeEventListener('mousemove', trackPieceMove);
+        if(!mouseMoved) {
+            activePiece = null;
+            return;
+        } ;
+        mouseMoved = false;
         if(activePiece) {
 
             // Absolute x, y cordinates
@@ -70,43 +72,45 @@ function createChessBoard() {
             activePiece.style.left = absoluteToPercentageConverter(normalizedX, chessboard.offsetWidth);
             activePiece.style.top = absoluteToPercentageConverter(normalizedY, chessboard.offsetWidth);
 
-            let currentPos = activePiece.initialPos;
+            let currentPos = [...activePiece.initialPos];
             try {
-
-                activePiece.initialPos = [cX, cY];
-                activePiece.style.left = (normalizedX * 100 / chessboard.offsetWidth) + '%';
-                activePiece.style.top = (normalizedY * 100 / chessboard.offsetWidth) + '%';
                 let isValid = await updatePosition(currentPos[0] + currentPos[1] * 8, cX + cY * 8);
 
-                if(!isValid) {
-
-                    activePiece.initialPos = currentPos;
-                    activePiece.style.cssText = ` left: ${cartesianToPercentageConverter(currentPos[0])}; top: ${cartesianToPercentageConverter(currentPos[1])}`;
-     
+                if(isValid) {
+                    activePiece.initialPos = [cX, cY];
+                    activePiece.style.left = (normalizedX * 100 / chessboard.offsetWidth) + '%';
+                    activePiece.style.top = (normalizedY * 100 / chessboard.offsetWidth) + '%';    
+                } else {
+                    activePiece.style.cssText = ` left: ${cartesianToPercentageConverter(activePiece.initialPos[0])}; top: ${cartesianToPercentageConverter(activePiece.initialPos[1])}`;
                 }
-
             } catch(e) {
-
-               activePiece.initialPos = currentPos;
-               activePiece.style.cssText = ` left: ${cartesianToPercentageConverter(currentPos[0])}; top: ${cartesianToPercentageConverter(currentPos[1])}`;
-
             }
         }
         activePiece = null;
     }
 
-    function createSquare(initX = 0, initY = 0, className = 'wp', pieceType = { color: 'white', piece: 'PON'}) {
+    /**
+     * 
+     * @param {*} initX  X cordinate of the piece
+     * @param {*} initY Y cordinate of the piece
+     * @param {*} className 
+     * @param {*} pieceType represents the piece ie PON, ROOK, KING etc and also the color WHITE / BLACK
+     */
+    function createSquare(initX = 0, initY = 0, className) {
 
-        chessPiecesCurrentPosition[initX + initY * 8] = pieceType;
+        chessPiecesCurrentPosition[initX + initY * 8] = className;
 
         let square = document.createElement('div');
-        square.setAttribute('class', className);
+        square.classList.add('cp');
+        square.classList.add(className);
+        square.pieceType = className;
         square.style.cssText = ` left: ${cartesianToPercentageConverter(initX)}; top: ${cartesianToPercentageConverter(initY)}`;
 
         chessboard.appendChild(square);
         square.initialPos = [initX, initY];
-        square.pieceType = pieceType;
         square.addEventListener('mousedown', function (e) {
+
+            e.preventDefault();
             offset = [
                 square.offsetLeft - e.clientX,
                 square.offsetTop - e.clientY
@@ -116,9 +120,13 @@ function createChessBoard() {
             document.addEventListener('mousemove', trackPieceMove);
             document.addEventListener('mouseup',stopTrackPieceMove, true);
 
-        }, true);
+        });
     }
 
+    INITIAL_POSITIONS.forEach(position => createSquare(...position));
+    resizeChessboardObserver();
+
+    document.getElementById('root').appendChild(chessboard);
     return chessboard;
 }
 

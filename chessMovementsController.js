@@ -1,16 +1,46 @@
-let chessPiecesCurrentPosition = {};
-
-function isValidMove(oldPos, newPos) {
-
-    return false;
+function getPiece(pos) {
+    return chessPiecesCurrentPosition(pos);
 }
 
-async function updatePosition(currentPos, newPos) {
+function getPieceDetails(piece) {
 
-    chessPiecesCurrentPosition[newPos] = chessPiecesCurrentPosition[currentPos];
+    return {
+        color: piece && piece[0],
+        type: piece && piece[1],
+    }
+}
+
+function isValidMoveForPieceToCordinate(currentPos, newPos, piece) {
+
+    switch(piece.type) {
+
+        case 'p':
+            return isValidPonMove(currentPos, newPos, piece);
+    }
+
+    return true;
+}
+
+function isValidMove(currentPos, targetPos) {
+
+    let piece = chessPiecesCurrentPosition[currentPos];
+    let targetPosPiece = chessPiecesCurrentPosition[targetPos];
+    const piece1 = getPieceDetails(piece); 
+    const piece2 = getPieceDetails(targetPosPiece);
+
+    //Rule 1: If both pieces are same color return false
+    if(piece1.color === piece2.color) return false;
+    //Rule2 : Validate if the movement to a cordinate is allowed
+    if(!isValidMoveForPieceToCordinate(currentPos, targetPos, piece1)) return false;
+
+    return true;
+}
+async function updatePosition(currentPos, newPos) {
 
     if(!isValidMove(currentPos, newPos)) return false;
     //TODO: Make service call to update the position
+    delete chessPiecesCurrentPosition[newPos];
+    chessPiecesCurrentPosition[newPos] = chessPiecesCurrentPosition[currentPos];
 
     delete  chessPiecesCurrentPosition[currentPos];
     return true;
