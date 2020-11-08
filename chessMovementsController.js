@@ -2,13 +2,6 @@ function getPiece(pos) {
     return chessPiecesCurrentPosition(pos);
 }
 
-function getPieceDetails(piece) {
-
-    return {
-        color: piece && piece[0],
-        type: piece && piece[1],
-    }
-}
 
 function isValidMoveForPieceToCordinate(currentPos, newPos, piece) {
 
@@ -22,7 +15,6 @@ function isValidMoveForPieceToCordinate(currentPos, newPos, piece) {
 }
 
 function isValidMove(currentPos, targetPos) {
-
     let piece = chessPiecesCurrentPosition[currentPos];
     let targetPosPiece = chessPiecesCurrentPosition[targetPos];
     const piece1 = getPieceDetails(piece); 
@@ -37,11 +29,17 @@ function isValidMove(currentPos, targetPos) {
 }
 async function updatePosition(currentPos, newPos) {
 
-    if(!isValidMove(currentPos, newPos)) return false;
+    if(!isValidMove(currentPos, newPos)) {
+        return false
+    };
     //TODO: Make service call to update the position
-    delete chessPiecesCurrentPosition[newPos];
-    chessPiecesCurrentPosition[newPos] = chessPiecesCurrentPosition[currentPos];
-
+    if(chessPiecesCurrentPosition[newPos]) {
+        // debugger;
+        chessPiecesCurrentPosition[newPos].node.remove();
+        delete chessPiecesCurrentPosition[newPos];
+    }
+    chessPiecesCurrentPosition[newPos] = {...chessPiecesCurrentPosition[currentPos]};
     delete  chessPiecesCurrentPosition[currentPos];
+    // debugger;
     return true;
 }

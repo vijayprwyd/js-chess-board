@@ -53,7 +53,7 @@ function createChessBoard() {
     // Invoked after a piece is positioned on a point during a players turn
     async function stopTrackPieceMove(event) {
         event.preventDefault();
-
+        // if(event.target !== activePiece) event.target.remove();
         document.removeEventListener('mousemove', trackPieceMove);
         if(!mouseMoved) {
             activePiece = null;
@@ -98,8 +98,6 @@ function createChessBoard() {
      */
     function createSquare(initX = 0, initY = 0, className) {
 
-        chessPiecesCurrentPosition[initX + initY * 8] = className;
-
         let square = document.createElement('div');
         square.classList.add('cp');
         square.classList.add(className);
@@ -109,7 +107,6 @@ function createChessBoard() {
         chessboard.appendChild(square);
         square.initialPos = [initX, initY];
         square.addEventListener('mousedown', function (e) {
-
             e.preventDefault();
             offset = [
                 square.offsetLeft - e.clientX,
@@ -119,8 +116,11 @@ function createChessBoard() {
             activePiece = square;
             document.addEventListener('mousemove', trackPieceMove);
             document.addEventListener('mouseup',stopTrackPieceMove, true);
-
         });
+        chessPiecesCurrentPosition[initX + initY * 8] = {
+            pieceType: className,
+            node: square
+        };
     }
 
     INITIAL_POSITIONS.forEach(position => createSquare(...position));
