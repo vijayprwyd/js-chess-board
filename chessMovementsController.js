@@ -4,11 +4,12 @@ function getPiece(pos) {
 
 
 function isValidMoveForPieceToCordinate(currentPos, newPos, piece) {
-
     switch(piece.type) {
 
         case 'p':
             return isValidPonMove(currentPos, newPos, piece);
+        case 'n':
+            return isValidKnightMove(currentPos, newPos, piece);
     }
 
     return true;
@@ -34,12 +35,10 @@ async function updatePosition(currentPos, newPos) {
     };
     //TODO: Make service call to update the position
     if(chessPiecesCurrentPosition[newPos]) {
-        // debugger;
         chessPiecesCurrentPosition[newPos].node.remove();
         delete chessPiecesCurrentPosition[newPos];
     }
     chessPiecesCurrentPosition[newPos] = {...chessPiecesCurrentPosition[currentPos]};
     delete  chessPiecesCurrentPosition[currentPos];
-    // debugger;
     return true;
 }

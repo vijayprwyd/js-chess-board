@@ -15,7 +15,7 @@ function createChessBoard() {
     
         function resizeChessBoard(entries) {
     
-            for (const entry of entries) {
+            for (let entry of entries) {
     
                 let squareSize = Math.min(entry.contentRect.width, entry.contentRect.height);
                 let normalizedSize = Math.floor(squareSize/TOTAL_SQUARES) * TOTAL_SQUARES;
@@ -53,8 +53,8 @@ function createChessBoard() {
     // Invoked after a piece is positioned on a point during a players turn
     async function stopTrackPieceMove(event) {
         event.preventDefault();
-        // if(event.target !== activePiece) event.target.remove();
         document.removeEventListener('mousemove', trackPieceMove);
+        // handle se-cases where mouse is clicked on a piece but not moved
         if(!mouseMoved) {
             activePiece = null;
             return;
