@@ -14,3 +14,13 @@ function absoluteToPercentageConverter(pos, size) {
 function cartesianToPercentageConverter(pos) {
     return `${pos * PERCENTAGE_SQUARE_WIDTH}%`;
 }
+
+function convert1DTo2D(cordinate) {
+    return [cordinate % 8, Math.floor(cordinate / 8)];
+}
+
+function convert2DTo1D(x, y) {
+
+    return x  + y * 8;
+
+}

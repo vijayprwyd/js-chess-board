@@ -64,6 +64,9 @@
     background-image: url('./images/bp.webp');
 }
 
+.previous {
+    background-color: rgb(186, 202, 43);
+}
 
 
 #root {

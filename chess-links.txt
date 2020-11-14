@@ -1,0 +1,9 @@
+https://images.chesscomfiles.com/chess-themes/sounds/_WEBM_/default/game-start.webm
+https://images.chesscomfiles.com/chess-themes/sounds/_WEBM_/default/game-end.webm
+https://images.chesscomfiles.com/chess-themes/sounds/_WEBM_/default/capture.webm
+https://images.chesscomfiles.com/chess-themes/sounds/_WEBM_/default/castle.webm
+https://images.chesscomfiles.com/chess-themes/sounds/_WEBM_/default/move-self.webm
+https://images.chesscomfiles.com/chess-themes/sounds/_WEBM_/default/promote.webm
+https://images.chesscomfiles.com/chess-themes/sounds/_WEBM_/default/notify.webm
+https://images.chesscomfiles.com/chess-themes/sounds/_WEBM_/default/tenseconds.webms
+https://images.chesscomfiles.com/chess-themes/sounds/_WEBM_/default/illegal.webm
