@@ -3,7 +3,11 @@ function createChessBoard() {
     chessboard.setAttribute('class', 'chessboard');
 
     // To track the piece that is currently moved
-    let activePiece, offset, x, y, mouseMoved;
+    let activePiece, offset, x, y, mouseMoved, targetMove;
+
+    targetMove = document.createElement('div');
+    targetMove.setAttribute('class', 'cp target-move' );
+    targetMove.setAttribute("style", 'top: -100%');
 
     // function which observes the chessboard resize events and accordingly modifies the size of the pieces
     function resizeChessboardObserver() {
@@ -79,7 +83,11 @@ function createChessBoard() {
                 if(isValid) {
                     activePiece.initialPos = [cX, cY];
                     activePiece.style.left = (normalizedX * 100 / chessboard.offsetWidth) + '%';
-                    activePiece.style.top = (normalizedY * 100 / chessboard.offsetWidth) + '%';    
+                    activePiece.style.top = (normalizedY * 100 / chessboard.offsetWidth) + '%';
+                    
+                    targetMove.style.left = (normalizedX * 100 / chessboard.offsetWidth) + '%';
+                    targetMove.style.top = (normalizedY * 100 / chessboard.offsetWidth) + '%';    
+
                 } else {
                     activePiece.style.cssText = ` left: ${cartesianToPercentageConverter(activePiece.initialPos[0])}; top: ${cartesianToPercentageConverter(activePiece.initialPos[1])}`;
                 }
@@ -105,6 +113,8 @@ function createChessBoard() {
         square.style.cssText = ` left: ${cartesianToPercentageConverter(initX)}; top: ${cartesianToPercentageConverter(initY)}`;
 
         chessboard.appendChild(square);
+        chessboard.appendChild(targetMove);
+
         square.initialPos = [initX, initY];
         square.addEventListener('mousedown', function (e) {
             e.preventDefault();
@@ -112,7 +122,7 @@ function createChessBoard() {
                 square.offsetLeft - e.clientX,
                 square.offsetTop - e.clientY
             ];
-    
+
             activePiece = square;
             document.addEventListener('mousemove', trackPieceMove);
             document.addEventListener('mouseup',stopTrackPieceMove, true);
@@ -125,6 +135,7 @@ function createChessBoard() {
 
     INITIAL_POSITIONS.forEach(position => createSquare(...position));
     resizeChessboardObserver();
+    //chessPiecesCurrentPosition[0].node.setAttribute('style', 'background-color: blue')
 
     document.getElementById('root').appendChild(chessboard);
     return chessboard;
