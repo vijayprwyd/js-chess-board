@@ -113,7 +113,7 @@ function hasPieceObstrucingStraightPath(currentPos, newPos) {
     return false;
 }
 
-function isValidMove(currentPos, targetPos) {
+function isValidPieceMove(currentPos, targetPos) {
 
     let piece = chessPiecesCurrentPosition[currentPos];
     let targetPosPiece = chessPiecesCurrentPosition[targetPos];
@@ -127,7 +127,6 @@ function isValidMove(currentPos, targetPos) {
     if (piece1.color === piece2.color) return false;
     //Rule2 : Validate if the movement to a cordinate is allowed
     switch (piece1.type) {
-
         case 'p':
             return isValidPonMove(currentPos, targetPos, piece1);
         case 'n':
@@ -142,5 +141,9 @@ function isValidMove(currentPos, targetPos) {
             return isValidKingMove(currentPos, targetPos)
     }
 
-    return true;
+}
+
+function isValidMove(currentPos, targetPos) {
+    return isValidPieceMove(currentPos, targetPos) && !isKingUnderCheckAfterMove(currentPos, targetPos);
+
 }

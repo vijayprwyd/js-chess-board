@@ -48,9 +48,9 @@ function createChessBoard() {
         mouseMoved = true;
         if(activePiece) {
 
-            let [x, y] = getPos(event.clientX + offset[0], event.clientY + offset[1], chessboard, activePiece);
-            activePiece.style.left = x*100 +  '%';
-            activePiece.style.top = y*100 +  '%';
+            let [moveX, moveY] = getPos(event.clientX + offset[0], event.clientY + offset[1], chessboard, activePiece);
+            activePiece.style.left = moveX *100 +  '%';
+            activePiece.style.top = moveY * 100 +  '%';
         }
     }
     

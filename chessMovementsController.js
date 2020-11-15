@@ -3,7 +3,6 @@ function getPiece(pos) {
 }
 
 async function updatePosition(currentPos, newPos) {
-
     if(!isValidMove(currentPos, newPos)) {
         return false
     };
@@ -12,7 +11,12 @@ async function updatePosition(currentPos, newPos) {
         chessPiecesCurrentPosition[newPos].node.remove();
         delete chessPiecesCurrentPosition[newPos];
     }
-    chessPiecesCurrentPosition[newPos] = {...chessPiecesCurrentPosition[currentPos]};
+
+    const piece = getPieceDetails(chessPiecesCurrentPosition[currentPos]);
+    if(piece.type === 'k') {
+        setKingPos(newPos);
+    }
+    chessPiecesCurrentPosition[newPos] = chessPiecesCurrentPosition[currentPos];
     delete  chessPiecesCurrentPosition[currentPos];
     toggleCurrentPlayerColor();
     return true;

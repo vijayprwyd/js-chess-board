@@ -6,5 +6,5 @@ function getPieceDetails(piece) {
 }
 
 function getDirectionForPieceBasedOnColor(color) {
-  return facingPiece === color ? -1 : 1;
+  return getFacingPiece() === color ? -1 : 1;
 }
