@@ -1,6 +1,6 @@
-function isAttackedByKnight(kingCordinate, chessPiecesAfterMove) {
+function isPieceAttackedByKnight(pieceCordinate, chessPiecesAfterMove) {
     const knightMoves = [[2, 1], [2, -1], [-2, 1], [-2, -1], [1, 2], [1, -2], [-1, -2], [-1, 2]];
-    const [kx, ky] = kingCordinate;
+    const [kx, ky] = pieceCordinate;
 
     return knightMoves.some(([x, y]) => {
 
@@ -16,10 +16,10 @@ function isAttackedByKnight(kingCordinate, chessPiecesAfterMove) {
     });
 }
 
-function isKingAttackedDiagonally(kingCordinate, chessPiecesAfterMove) {
+function isPieceAttackedDiagonally(pieceCordinate, chessPiecesAfterMove) {
 
     let diagonalMoves = [[1, 1], [1, -1], [-1, -1], [-1, 1]];
-    const [kx, ky] = kingCordinate;
+    const [kx, ky] = pieceCordinate;
     return diagonalMoves.some(([x, y]) => {
 
         for(let i = x, j = y; isValidSquare(kx + i, ky + j); i+=x, j+=y) {
@@ -37,10 +37,10 @@ function isKingAttackedDiagonally(kingCordinate, chessPiecesAfterMove) {
     });
 }
 
-function isKingAttackedStraight(kingCordinate, chessPiecesAfterMove) {
+function isPieceAttackedStraight(pieceCordinate, chessPiecesAfterMove) {
 
     let strightMoves = [[1, 0], [0, -1], [-1, 0], [0, 1]];
-    const [kx, ky] = kingCordinate;
+    const [kx, ky] = pieceCordinate;
     return strightMoves.some(([x, y]) => {
 
         for(let i = x, j = y; isValidSquare(kx + i, ky + j); i+=x, j+=y) {
@@ -60,14 +60,14 @@ function isKingAttackedStraight(kingCordinate, chessPiecesAfterMove) {
 }
 
 
-function isKingAttackedByPawn(kingCordinate, chessPiecesAfterMove) {
+function isPieceAttackedByPawn(pieceCordinate, chessPiecesAfterMove) {
     const currentPlayerColor = getCurrentPlayerColor();
     const direction = getDirectionForPieceBasedOnColor(currentPlayerColor);
 
     let pawnMoves = [7, 9];
 
     return pawnMoves.some((position) => {
-        const index = convert2DTo1D(...kingCordinate) + position * direction;
+        const index = convert2DTo1D(...pieceCordinate) + position * direction;
         const piece = chessPiecesAfterMove[index];
         if(piece) {
             if(piece[1] === 'p' &&  piece[0] !== getCurrentPlayerColor()) {
@@ -88,5 +88,5 @@ function isKingUnderCheckAfterMove(currentPos, targetPos) {
     chessPiecesAfterMove[targetPos] = chessPiecesAfterMove[currentPos];
     delete chessPiecesAfterMove[currentPos];
     let kingCordinates = convert1DTo2D(kingPosition);
-    return  isKingAttackedByPawn(kingCordinates, chessPiecesAfterMove) || isAttackedByKnight(kingCordinates, chessPiecesAfterMove) || isKingAttackedDiagonally(kingCordinates, chessPiecesAfterMove) || isKingAttackedStraight(kingCordinates, chessPiecesAfterMove);
+    return  isPieceAttackedByPawn(kingCordinates, chessPiecesAfterMove) || isPieceAttackedByKnight(kingCordinates, chessPiecesAfterMove) || isPieceAttackedDiagonally(kingCordinates, chessPiecesAfterMove) || isPieceAttackedStraight(kingCordinates, chessPiecesAfterMove);
 }

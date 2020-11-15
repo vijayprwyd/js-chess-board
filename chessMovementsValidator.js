@@ -113,7 +113,16 @@ function hasPieceObstrucingStraightPath(currentPos, newPos) {
     return false;
 }
 
-function isValidPieceMove(currentPos, targetPos) {
+function getCastlingMoveType(currentPos, targetPos) {
+
+    const piece = getPieceDetails(chessPiecesCurrentPosition[currentPos]);
+    if(piece.type === 'k') {
+        if(targetPos - currentPos === 2 && getIsEligibleForCastling(currentPos, 'KING_SIDE_CASTLING')) return 'KING_SIDE_CASTLING';
+        if(currentPos - targetPos === 2 && getIsEligibleForCastling(currentPos, 'QUEEN_SIDE_CASTLING')) return 'QUEEN_SIDE_CASTLING';
+    }
+}
+
+function isValidMove(currentPos, targetPos) {
 
     let piece = chessPiecesCurrentPosition[currentPos];
     let targetPosPiece = chessPiecesCurrentPosition[targetPos];
@@ -140,10 +149,5 @@ function isValidPieceMove(currentPos, targetPos) {
         case 'k':
             return isValidKingMove(currentPos, targetPos)
     }
-
-}
-
-function isValidMove(currentPos, targetPos) {
-    return isValidPieceMove(currentPos, targetPos) && !isKingUnderCheckAfterMove(currentPos, targetPos);
 
 }
