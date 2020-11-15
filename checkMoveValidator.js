@@ -3,8 +3,7 @@ function isPieceAttackedByKnight(pieceCordinate, chessPiecesAfterMove) {
     const [kx, ky] = pieceCordinate;
 
     return knightMoves.some(([x, y]) => {
-
-        if(isValidSquare(kx +x, ky +y)) return false;
+        if(!isValidSquare(kx +x, ky +y)) return false;
         const index = convert2DTo1D(kx + x, ky + y);
         const piece = chessPiecesAfterMove[index];
 
@@ -79,14 +78,9 @@ function isPieceAttackedByPawn(pieceCordinate, chessPiecesAfterMove) {
 
 
 function isKingUnderCheckAfterMove(currentPos, targetPos) {
-    let entries = Object.entries(chessPiecesCurrentPosition), chessPiecesAfterMove = {};
-    for(let [key, value] of entries ) {
-        chessPiecesAfterMove[key] = value.pieceType; 
-    }
-    let kingPosition = chessPiecesAfterMove[currentPos] === `${currentPlayerColor}k` ? targetPos :  getCurrentPlayerKingPos();
-    delete chessPiecesAfterMove[targetPos];
-    chessPiecesAfterMove[targetPos] = chessPiecesAfterMove[currentPos];
-    delete chessPiecesAfterMove[currentPos];
+    let piece = getPieceDetails(chessPiecesCurrentPosition[currentPos]);
+    let chessPiecesAfterMove = getUpdatedStateCopyBeforeValidation(currentPos, targetPos);
+    let kingPosition = piece.type === 'k' ? targetPos :  getCurrentPlayerKingPos();
     let kingCordinates = convert1DTo2D(kingPosition);
     return  isPieceAttackedByPawn(kingCordinates, chessPiecesAfterMove) || isPieceAttackedByKnight(kingCordinates, chessPiecesAfterMove) || isPieceAttackedDiagonally(kingCordinates, chessPiecesAfterMove) || isPieceAttackedStraight(kingCordinates, chessPiecesAfterMove);
 }
