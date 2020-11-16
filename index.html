@@ -2,7 +2,7 @@
 
     <head>
 
-        <link rel = "stylesheet" href = "chessboard.css">
+        <link rel = "stylesheet" href = "./src/chessboard.css">
 
 
     </head>
@@ -10,17 +10,22 @@
     <body style = "padding: 10px 0 0 00px">
 
         <div id  = "root"></div>
-        <script src = "constants.js"></script>
-        <script src = "globalVariables.js"></script>
-        <script src = "initialPositions.js"></script>
-        <script src = "utils.js"></script>
-        <script src = "chessPieceUtils.js"></script>
-        <script src = "castlingUtils.js"></script>
-        <script src = "chessBoardUtils.js"></script>
-        <script src = "checkMoveValidator.js"></script>
-        <script src = "chessMovementsValidator.js"></script>
-        <script src = "chessMovementsController.js"></script>
-        <script src = "chessboard.js"></script>
+        
+        <script src = "./src/js/constants/constants.js"></script>
+        <script src = "./src/js/constants/initialPositions.js"></script>
+
+        <script src = "./src/js/globalState/globalVariables.js"></script>
+        <script src = "./src/js/utils/utils.js"></script>
+        
+        <script src = "./src/js/chessUtils/chessPieceUtils.js"></script>
+        <script src = "./src/js/chessUtils/castlingUtils.js"></script>
+        <script src = "./src/js/chessUtils/chessBoardUtils.js"></script>
+        
+        <script src = "./src/js/validators/checkMoveValidator.js"></script>
+        <script src = "./src/js/validators/chessMovementsValidator.js"></script>
+        
+        <script src = "./src/js/chessboard/chessMovementsController.js"></script>
+        <script src = "./src/js/chessboard/chessboard.js"></script>
 
     </body>
 
